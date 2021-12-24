@@ -1,0 +1,16 @@
+$manifest = @{
+    Path              = '.\ModuleName.psd1'
+    RootModule        = 'ModuleName.psm1' 
+    Author            = 'Philipp Loß'
+}
+New-ModuleManifest @manifest
+
+
+1. change paths and execute in powershell directly
+2. add FunctionsToExport (the functions that will be visible) (Line 72)
+
+
+
+
+
+Import-Module .\ModuleName.psm1 -verbose
