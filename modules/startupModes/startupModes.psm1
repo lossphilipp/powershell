@@ -52,6 +52,7 @@ Function lop-start-gaming {
 	if($riot) {
 		# open riot client
 		Start-Process -FilePath (-join($startMenuProgramData, 'Riot Games\Riot Client.lnk'))
+		Start-Process -FilePath (-join($startMenuAppData, 'Overwolf\U.GG.lnk'))
 	}
 	if($steam) {
 		# open steam
