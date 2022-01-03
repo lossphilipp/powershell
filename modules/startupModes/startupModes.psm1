@@ -64,9 +64,10 @@ Function lop-start-gaming {
 	$logitechProcess = Get-Process 'LCore'
 	$logitechProcess.CloseMainWindow()
 	
-	Write-Host 'Closing GUI of ArmouryCrate'
-	$armourycrateProcess = Get-Process 'ArmouryCrate'
-	$armourycrateProcess.CloseMainWindow()
+	#This is currently not working. Still searching for a solution why...
+	#Write-Host 'Closing GUI of ArmouryCrate'
+	#$armourycrateProcess = Get-Process 'ArmouryCrate'
+	#$armourycrateProcess.CloseMainWindow()
 	
 	# close powershell
 	Stop-Process -Id $PID
@@ -91,7 +92,7 @@ Function lop-start-coding {
 		Start-Process -FilePath (-join($startMenuProgramData, 'Android Studio.lnk'))
 	}
 	
-	if($steam) {
+	if($vscode) {
 		# VS Code currently not installed
 	}
 }
