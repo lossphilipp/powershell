@@ -14,7 +14,8 @@ Function openFolder {
 Function lop-start-fhv {
 	[CmdletBinding()]
 	param(
-		[Parameter(Mandatory=$false)][switch]$vpn
+		[Parameter(Mandatory=$false)][switch]$vpn,
+		[Parameter(Mandatory=$false)][switch]$zotero
 	)
 	$fhvFolder = 'C:\Users\phili\OneDrive\Dokumente\FH Vorarlberg\Semester 1'
 	
@@ -30,6 +31,10 @@ Function lop-start-fhv {
 	if($vpn) {
 		# open Cisco VPN Client
 		Start-Process -FilePath (-join($startMenuProgramData, 'Cisco AnyConnect Secure Mobility Client.lnk'))
+	}
+	if($zotero) {
+		# open Zotero
+		Start-Process -FilePath (-join($startMenuProgramData, 'Zotero.lnk'))
 	}
 }
 
@@ -105,7 +110,7 @@ Function lop-help {
 	
 	$functions += [PSCustomObject]@{
         ModuleName = "lop-start-fhv"
-		Parameters = "vpn"
+		Parameters = "vpn, zotero"
         Description = "Starts Teams, opens ilias & changes folder (also in powershell)"
 
     }
