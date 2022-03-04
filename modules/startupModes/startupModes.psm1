@@ -73,9 +73,6 @@ Function lop-start-gaming {
 	#Write-Host 'Closing GUI of ArmouryCrate'
 	#$armourycrateProcess = Get-Process 'ArmouryCrate'
 	#$armourycrateProcess.CloseMainWindow()
-	
-	# close powershell
-	Stop-Process -Id $PID
 }
 
 Function lop-start-coding {
