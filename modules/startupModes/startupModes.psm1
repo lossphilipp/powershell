@@ -17,24 +17,24 @@ Function lop-start-fhv {
 		[Parameter(Mandatory=$false)][switch]$vpn,
 		[Parameter(Mandatory=$false)][switch]$zotero
 	)
-	$fhvFolder = 'C:\Users\phili\OneDrive\Dokumente\FH Vorarlberg\Semester 1'
+	$fhvFolder = 'C:\Users\phili\OneDrive\Dokumente\FH Vorarlberg\Semester 2'
 	
 	# start Teams
-	Start-Process -FilePath (-join($startMenuAppData, 'Microsoft Teams.lnk'))
+	Start-Process -FilePath "$startMenuAppData\Microsoft Teams.lnk"
 	
 	# open Firefox to A5
-	Start-Process -FilePath (-join($startMenuProgramData, 'Firefox Developer Edition.lnk')) -ArgumentList '-url https://a5.fhv.at/de/index.php'
+	Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList '-url https://a5.fhv.at/de/index.php'
 	
 	# open folder
 	openFolder($fhvFolder)
 	
 	if($vpn) {
 		# open Cisco VPN Client
-		Start-Process -FilePath (-join($startMenuProgramData, 'Cisco AnyConnect Secure Mobility Client.lnk'))
+		Start-Process -FilePath "$startMenuProgramData\Cisco AnyConnect Secure Mobility Client.lnk"
 	}
 	if($zotero) {
 		# open Zotero
-		Start-Process -FilePath (-join($startMenuProgramData, 'Zotero.lnk'))
+		Start-Process -FilePath "$startMenuProgramData\Zotero.lnk"
 	}
 }
 
@@ -47,21 +47,21 @@ Function lop-start-gaming {
 	)
 	
 	# start those programs: Logitech Gaming software & Armoury Crate
-	Start-Process -FilePath (-join($startMenuProgramData, 'Logitech Gaming Software 9.02.lnk')) -wait
-	Start-Process -FilePath (-join($startMenuWindowsApps, 'ArmouryCrate.exe')) -wait
+	Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software 9.02.lnk" -wait
+	Start-Process -FilePath "$startMenuWindowsApps\ArmouryCrate.exe" -wait
 	
 	if($multi) {
 		# open discord
-		Start-Process -FilePath (-join($startMenuAppData, 'Discord.lnk'))
+		Start-Process -FilePath "$startMenuAppData\Discord.lnk"
 	}
 	if($riot) {
-		# open riot client
-		Start-Process -FilePath (-join($startMenuProgramData, 'Riot Games\Riot Client.lnk'))
-		Start-Process -FilePath (-join($startMenuAppData, 'Overwolf\U.GG.lnk'))
+		# open riot client & Overwolf Plugin
+		Start-Process -FilePath "$startMenuProgramData\Riot Games\Riot Client.lnk"
+		Start-Process -FilePath "$startMenuAppData\Overwolf\U.GG.lnk"
 	}
 	if($steam) {
 		# open steam
-		Start-Process -FilePath (-join($startMenuProgramData, 'Steam.lnk'))
+		Start-Process -FilePath "$startMenuProgramData\Steam.lnk"
 	}
 	
 	#Then close different GUIs
@@ -69,33 +69,39 @@ Function lop-start-gaming {
 	$logitechProcess = Get-Process 'LCore'
 	$logitechProcess.CloseMainWindow()
 	
-	#This is currently not working. Still searching for a solution why...
-	#Write-Host 'Closing GUI of ArmouryCrate'
-	#$armourycrateProcess = Get-Process 'ArmouryCrate'
-	#$armourycrateProcess.CloseMainWindow()
+	#Armoury Create has no MainWindow so stopping Process of the GUI
+	Write-Host 'Closing GUI of ArmouryCrate'
+	$armourycrateProcess = Get-Process 'ArmouryCrate'
+	Stop-Process $armourycrateProcess
 }
 
 Function lop-start-coding {
 	[CmdletBinding()]
 	param(
 		[Parameter(Mandatory=$false)][switch]$android,
-		[Parameter(Mandatory=$false)][switch]$vscode
+		[Parameter(Mandatory=$false)][switch]$vscode,
+		[Parameter(Mandatory=$false)][switch]$visual
 	)
 	$codingFolder = 'C:\Users\phili\Coding-Projects'
 	
 	#start git
-	Start-Process -FilePath (-join($startMenuProgramData, 'Git\Git Bash.lnk'))
+	Start-Process -FilePath "$startMenuProgramData\Git\Git Bash.lnk" -WorkingDirectory $codingFolder
 	
 	# open folder
 	openFolder($codingFolder)
 	
 	if($android) {
 		# open Android Studio
-		Start-Process -FilePath (-join($startMenuProgramData, 'Android Studio.lnk'))
+		Start-Process -FilePath "$startMenuProgramData\Android Studio.lnk"
 	}
 	
 	if($vscode) {
 		# VS Code currently not installed
+	}
+	
+	if($visual) {
+		# open Visual Studio
+		Start-Process -FilePath "$startMenuProgramData\Visual Studio 2022.lnk"
 	}
 }
 
@@ -108,19 +114,19 @@ Function lop-help {
 	$functions += [PSCustomObject]@{
         ModuleName = "lop-start-fhv"
 		Parameters = "vpn, zotero"
-        Description = "Starts Teams, opens ilias & changes folder (also in powershell)"
+        Description = "Starts Teams, opens ilias (in Firefox) & opens folder"
 
     }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-gaming   "
-		Parameters = "multi, riot, steam   "
+        ModuleName = "lop-start-gaming"
+		Parameters = "multi, riot, steam"
         Description = "Starts Logitech Gaming software & Armoury Crate"
 
     }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-coding"
-		Parameters = "android, vscode"
-        Description = "Starts Git & changes folder (also in powershell)"
+        ModuleName = "lop-start-coding   "
+		Parameters = "android, vscode, visual   "
+        Description = "Starts Git & opens folder"
 
     }
 	$functions += [PSCustomObject]@{
