@@ -32,9 +32,15 @@ Function lop-start-fhv {
 		# open Cisco VPN Client
 		Start-Process -FilePath "$startMenuProgramData\Cisco AnyConnect Secure Mobility Client.lnk"
 	}
+	
 	if($zotero) {
 		# open Zotero
 		Start-Process -FilePath "$startMenuProgramData\Zotero.lnk"
+	}
+	
+	if($datagrip) {
+		# open DataGrip
+		Start-Process -FilePath "$startMenuProgramData\JetBrains\DataGrip 2022.1.4.lnk"
 	}
 }
 
@@ -54,11 +60,13 @@ Function lop-start-gaming {
 		# open discord
 		Start-Process -FilePath "$startMenuAppData\Discord.lnk"
 	}
+	
 	if($riot) {
 		# open riot client & Overwolf Plugin
 		Start-Process -FilePath "$startMenuProgramData\Riot Games\Riot Client.lnk"
 		Start-Process -FilePath "$startMenuAppData\Overwolf\U.GG.lnk"
 	}
+	
 	if($steam) {
 		# open steam
 		Start-Process -FilePath "$startMenuProgramData\Steam.lnk"
@@ -69,10 +77,10 @@ Function lop-start-gaming {
 	$logitechProcess = Get-Process 'LCore'
 	$logitechProcess.CloseMainWindow()
 	
-	#Armoury Create has no MainWindow so stopping Process of the GUI
+	#Armoury Create has no MainWindow? Stopping process again makes no sense...
 	Write-Host 'Closing GUI of ArmouryCrate'
 	$armourycrateProcess = Get-Process 'ArmouryCrate'
-	Stop-Process $armourycrateProcess
+	#Stop-Process $armourycrateProcess
 }
 
 Function lop-start-coding {
@@ -113,7 +121,7 @@ Function lop-help {
 	
 	$functions += [PSCustomObject]@{
         ModuleName = "lop-start-fhv"
-		Parameters = "vpn, zotero"
+		Parameters = "vpn, zotero, datagrip"
         Description = "Starts Teams, opens ilias (in Firefox) & opens folder"
 
     }
