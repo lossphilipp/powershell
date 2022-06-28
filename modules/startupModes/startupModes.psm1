@@ -113,6 +113,20 @@ Function lop-start-coding {
 	}
 }
 
+Function lop-start-vm {
+	[CmdletBinding()]
+	param(
+		[Parameter(Mandatory=$false)][switch]$ubuntu
+	)
+	#start Oracle VM VirtualBox
+	Start-Process -FilePath "$startMenuProgramData\Oracle VM VirtualBox\Oracle VM VirtualBox.lnk" -wait
+	
+	if($ubuntu) {
+		# open Ubuntu-VM
+		VBoxManage startvm "Ubuntu"
+	}
+}
+
 Function lop-help {
 	[CmdletBinding()]
 	param()
