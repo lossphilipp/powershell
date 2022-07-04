@@ -72,14 +72,14 @@ Function lop-start-gaming {
 		Start-Process -FilePath "$startMenuProgramData\Steam.lnk"
 	}
 	
-	#Then close different GUIs
+	# then close different GUIs
 	Write-Host 'Closing GUI of Logitech Gaming Software'
 	$logitechProcess = Get-Process 'LCore'
 	$logitechProcess.CloseMainWindow()
 	
-	#Armoury Create has no MainWindow? Stopping process again makes no sense...
-	Write-Host 'Closing GUI of ArmouryCrate'
-	$armourycrateProcess = Get-Process 'ArmouryCrate'
+	# Armoury Create has no MainWindow? Stopping process again makes no sense...
+	#Write-Host 'Closing GUI of ArmouryCrate'
+	#$armourycrateProcess = Get-Process 'ArmouryCrate'
 	#Stop-Process $armourycrateProcess
 }
 
@@ -88,11 +88,11 @@ Function lop-start-coding {
 	param(
 		[Parameter(Mandatory=$false)][switch]$android,
 		[Parameter(Mandatory=$false)][switch]$vscode,
-		[Parameter(Mandatory=$false)][switch]$visual
+		[Parameter(Mandatory=$false)][switch]$vs
 	)
 	$codingFolder = 'C:\Users\phili\Coding-Projects'
 	
-	#start git
+	# start git
 	Start-Process -FilePath "$startMenuProgramData\Git\Git Bash.lnk" -WorkingDirectory $codingFolder
 	
 	# open folder
@@ -104,10 +104,11 @@ Function lop-start-coding {
 	}
 	
 	if($vscode) {
-		# VS Code currently not installed
+		# open Visual Studio Code
+		# Path not know, was never installed before
 	}
 	
-	if($visual) {
+	if($vs) {
 		# open Visual Studio
 		Start-Process -FilePath "$startMenuProgramData\Visual Studio 2022.lnk"
 	}
@@ -118,7 +119,7 @@ Function lop-start-vm {
 	param(
 		[Parameter(Mandatory=$false)][switch]$ubuntu
 	)
-	#start Oracle VM VirtualBox
+	# start Oracle VM VirtualBox
 	Start-Process -FilePath "$startMenuProgramData\Oracle VM VirtualBox\Oracle VM VirtualBox.lnk" -wait
 	
 	if($ubuntu) {
@@ -135,20 +136,26 @@ Function lop-help {
 	
 	$functions += [PSCustomObject]@{
         ModuleName = "lop-start-fhv"
-		Parameters = "vpn, zotero, datagrip"
+		Parameters = "vpn, zotero, datagrip   "
         Description = "Starts Teams, opens ilias (in Firefox) & opens folder"
 
     }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-gaming"
+        ModuleName = "lop-start-gaming   "
 		Parameters = "multi, riot, steam"
         Description = "Starts Logitech Gaming software & Armoury Crate"
 
     }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-coding   "
-		Parameters = "android, vscode, visual   "
+        ModuleName = "lop-start-coding"
+		Parameters = "android, vscode, vs"
         Description = "Starts Git & opens folder"
+
+    }
+	$functions += [PSCustomObject]@{
+        ModuleName = "lop-start-vm"
+		Parameters = "ubuntu"
+        Description = "Starts VirtualBox"
 
     }
 	$functions += [PSCustomObject]@{
