@@ -1,6 +1,6 @@
-$startMenuProgramData = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\'
-$startMenuAppData = 'C:\Users\phili\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\'
-$startMenuWindowsApps = 'C:\Users\phili\AppData\Local\Microsoft\WindowsApps\'
+$startMenuProgramData = "$Env:ProgramData\Microsoft\Windows\Start Menu\Programs\"
+$startMenuAppData = "$Env:AppData\Microsoft\Windows\Start Menu\Programs\"
+$startMenuWindowsApps = "$Env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\"
 
 Function openFolder {
 	param (
@@ -17,7 +17,7 @@ Function lop-start-fhv {
 		[Parameter(Mandatory=$false)][switch]$vpn,
 		[Parameter(Mandatory=$false)][switch]$zotero
 	)
-	$fhvFolder = 'C:\Users\phili\OneDrive\Dokumente\FH Vorarlberg\Semester 2'
+	$fhvFolder = "$Env:FHV\Semester 3"
 	
 	# start Teams
 	Start-Process -FilePath "$startMenuAppData\Microsoft Teams.lnk"
