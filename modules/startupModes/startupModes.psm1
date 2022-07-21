@@ -15,7 +15,8 @@ Function lop-start-fhv {
 	[CmdletBinding()]
 	param(
 		[Parameter(Mandatory=$false)][switch]$vpn,
-		[Parameter(Mandatory=$false)][switch]$zotero
+		[Parameter(Mandatory=$false)][switch]$zotero,
+		[Parameter(Mandatory=$false)][switch]$datagrip
 	)
 	$fhvFolder = "$Env:FHV\Semester 3"
 	
@@ -53,7 +54,7 @@ Function lop-start-gaming {
 	)
 	
 	# start those programs: Logitech Gaming software & Armoury Crate
-	Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software 9.02.lnk" -wait
+	Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software.lnk" -wait
 	Start-Process -FilePath "$startMenuWindowsApps\ArmouryCrate.exe" -wait
 	
 	if($multi) {
@@ -69,7 +70,7 @@ Function lop-start-gaming {
 	
 	if($steam) {
 		# open steam
-		Start-Process -FilePath "$startMenuProgramData\Steam.lnk"
+		Start-Process -FilePath "$startMenuProgramData\Steam\Steam.lnk"
 	}
 	
 	# then close different GUIs
@@ -90,13 +91,12 @@ Function lop-start-coding {
 		[Parameter(Mandatory=$false)][switch]$vscode,
 		[Parameter(Mandatory=$false)][switch]$vs
 	)
-	$codingFolder = 'C:\Users\phili\Coding-Projects'
 	
-	# start git
-	Start-Process -FilePath "$startMenuProgramData\Git\Git Bash.lnk" -WorkingDirectory $codingFolder
+	# start Git via Windows Terminal
+	wt -p "Git Bash" -d $Env:Coding
 	
 	# open folder
-	openFolder($codingFolder)
+	openFolder($Env:Coding)
 	
 	if($android) {
 		# open Android Studio
