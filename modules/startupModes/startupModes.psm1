@@ -6,9 +6,41 @@ Function openFolder {
 	param (
 		[string]$Path
 	)
+	
 	Invoke-Item $Path
 	cd $Path
 	ls
+}
+
+Function sendMagicPacket {
+	param (
+		[string]$Mac
+	)
+	
+	Write-Host "Sending Magic Packet to $($Mac)"
+	
+	$MacByteArray = $Mac -split "[:-]" | ForEach-Object { [Byte] "0x$_"}
+	[Byte[]] $MagicPacket = (,0xFF * 6) + ($MacByteArray  * 16)
+	
+	$UdpClient = New-Object System.Net.Sockets.UdpClient
+	$UdpClient.Connect(([System.Net.IPAddress]::Broadcast),7)
+	$UdpClient.Send($MagicPacket,$MagicPacket.Length) > $null
+	$UdpClient.Close()
+}
+
+Function lop-start-serverconnection {
+	[CmdletBinding()]
+	param()
+	
+	sendMagicPacket -Mac 'EC:8E:B5:7B:C9:5C'
+	
+	Write-Host "Start pinging ""ubuntu-server"". This may take a while... "
+	$ping = $false
+	do {
+		$ping = Test-Connection -ComputerName ubuntu-server -Quiet # IP: 192.168.178.56
+	} until ($ping)
+	
+	putty.exe -load 'ubuntu-server'
 }
 
 Function lop-start-fhv {
@@ -134,6 +166,12 @@ Function lop-help {
 	
 	$functions = @()
 	
+		$functions += [PSCustomObject]@{
+        ModuleName = "lop-start-serverconnection   "
+		Parameters = "-"
+        Description = "Starts the server and opens a Putty session, as soon as it is booted."
+
+    }
 	$functions += [PSCustomObject]@{
         ModuleName = "lop-start-fhv"
 		Parameters = "vpn, zotero, datagrip   "
@@ -141,7 +179,7 @@ Function lop-help {
 
     }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-gaming   "
+        ModuleName = "lop-start-gaming"
 		Parameters = "multi, riot, steam"
         Description = "Starts Logitech Gaming software & Armoury Crate"
 
