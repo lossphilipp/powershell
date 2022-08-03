@@ -19,6 +19,7 @@ Function sendMagicPacket {
 	
 	Write-Host "Sending Magic Packet to $($Mac)"
 	
+	$Mac = $Mac.ToUpper()
 	$MacByteArray = $Mac -split "[:-]" | ForEach-Object { [Byte] "0x$_"}
 	[Byte[]] $MagicPacket = (,0xFF * 6) + ($MacByteArray  * 16)
 	
