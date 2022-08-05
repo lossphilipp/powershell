@@ -39,16 +39,33 @@ Function listenToUDP {
 
 	$endpoint = new-object System.Net.IPEndPoint ([IPAddress]::Any, $port)
 	$udpclient = new-Object System.Net.Sockets.UdpClient $port
+	$udpclient.Client.ReceiveTimeout = 1000 * 60 # 60 seconds
 	
-	do {
+	try {
 		$content = $udpclient.Receive([ref]$endpoint)
-		$parsedContent = [Text.Encoding]::ASCII.GetString($content)
+		$UdpClient.Close()
+	}
+	catch {
+		Write-Host "Connection timeout! Something is wrong here!" -ForegroundColor red
+	}
+	
+	if ($content) {
+		$receivetimestamp = Get-Date -Format HH:mm:ss:ff
+		Write-Host "Paket received at $($receivetimestamp)"
+		Write-Host "Sender: $($endpoint.tostring())"
+		Write-Host "---- DATA ------"
+		
+		[string[]]$parsedContent = [System.Text.Encoding]::ASCII.GetString($content)
+		Write-Host $parsedContent
+		Write-Host ""
 		
 		if($parsedContent -eq 'I am awake!'){
-			$serverUp = $true
+			Write-Host "Data contains the expected content. Moving on." -ForegroundColor green
 		}
-	} until ($serverUp)
-	$UdpClient.Close()
+		else {
+			Write-Error -Category InvalidData -CategoryReason "No expected content" -CategoryTargetName "Searching for content" -CategoryTargetType " ""I am awake!""" -Message "The data did not contain the expected content. ABORTING FUNCTION" -RecommendedAction "Check if the server sends the correct data."
+		}
+	}
 }
 
 Function lop-start-serverconnection {
@@ -58,12 +75,6 @@ Function lop-start-serverconnection {
 	sendMagicPacket -Mac 'EC:8E:B5:7B:C9:5C'
 	
 	listenToUDP
-	
-	Write-Host "Start pinging ""ubuntu-server"". This may take a while... "
-	$ping = $false
-	do {
-		$ping = Test-Connection -ComputerName ubuntu-server -Quiet 
-	} until ($ping)
 	
 	putty.exe -load 'ubuntu-server'
 }
