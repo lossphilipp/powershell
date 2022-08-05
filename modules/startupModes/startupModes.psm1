@@ -34,8 +34,6 @@ Function listenToUDP {
 		[string]$port = 1998
 	)
 	# 192.168.178.56 → 192.168.178.255
-	
-	$serverUp = $false
 
 	$endpoint = new-object System.Net.IPEndPoint ([IPAddress]::Any, $port)
 	$udpclient = new-Object System.Net.Sockets.UdpClient $port
@@ -59,7 +57,7 @@ Function listenToUDP {
 		Write-Host $parsedContent
 		Write-Host ""
 		
-		if($parsedContent -eq 'I am awake!'){
+		if ($parsedContent -eq 'I am awake!') {
 			Write-Host "Data contains the expected content. Moving on." -ForegroundColor green
 		}
 		else {
