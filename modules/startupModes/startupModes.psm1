@@ -29,16 +29,40 @@ Function sendMagicPacket {
 	$UdpClient.Close()
 }
 
+Function listenToUDP {
+	param (
+		[string]$port = 1998
+	)
+	# 192.168.178.56 → 192.168.178.255
+	
+	$serverUp = $false
+
+	$endpoint = new-object System.Net.IPEndPoint ([IPAddress]::Any, $port)
+	$udpclient = new-Object System.Net.Sockets.UdpClient $port
+	
+	do {
+		$content = $udpclient.Receive([ref]$endpoint)
+		$parsedContent = [Text.Encoding]::ASCII.GetString($content)
+		
+		if($parsedContent -eq 'I am awake!'){
+			$serverUp = $true
+		}
+	} until ($serverUp)
+	$UdpClient.Close()
+}
+
 Function lop-start-serverconnection {
 	[CmdletBinding()]
 	param()
 	
 	sendMagicPacket -Mac 'EC:8E:B5:7B:C9:5C'
 	
+	listenToUDP
+	
 	Write-Host "Start pinging ""ubuntu-server"". This may take a while... "
 	$ping = $false
 	do {
-		$ping = Test-Connection -ComputerName ubuntu-server -Quiet # IP: 192.168.178.56
+		$ping = Test-Connection -ComputerName ubuntu-server -Quiet 
 	} until ($ping)
 	
 	putty.exe -load 'ubuntu-server'
