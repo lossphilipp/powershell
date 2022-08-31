@@ -74,13 +74,13 @@ Function lop-start-serverconnection {
 	[CmdletBinding()]
 	param()
 	
-	$ping = Test-Connection -ComputerName 192.168.178.56 -Quiet -Count 1 -TimeoutSeconds 1
+	sendMagicPacket -Mac 'EC:8E:B5:7B:C9:5C'
+	
+	$ping = Test-Connection -ComputerName 192.168.178.56 -Quiet -Count 1
 	if ($ping) {
-		Write-Host 'Ping succeded. Starting connection immediately...'
+		Write-Host 'Ping succeded. Skip listening to UDP...'
 	}
 	else {
-		sendMagicPacket -Mac 'EC:8E:B5:7B:C9:5C'
-		
 		listenToUDP
 	}
 	
