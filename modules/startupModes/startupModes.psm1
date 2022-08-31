@@ -31,24 +31,28 @@ Function sendMagicPacket {
 
 Function listenToUDP {
 	param (
-		[string]$port = 1998
+		[string]$port = 1998,
+		[int]$timeout = 1000 * 120 # 2 minutes
 	)
 	# 192.168.178.56 → 192.168.178.255
+	Write-Host "Start listening to UDP..."
 
-	$endpoint = new-object System.Net.IPEndPoint ([IPAddress]::Any, $port)
-	$udpclient = new-Object System.Net.Sockets.UdpClient $port
-	$udpclient.Client.ReceiveTimeout = 1000 * 60 # 60 seconds
+	$endpoint = New-Object System.Net.IPEndPoint ([IPAddress]::Any, $port)
+	$udpclient = New-Object System.Net.Sockets.UdpClient $port
+	$udpclient.Client.ReceiveTimeout = $timeout
 	
 	try {
 		$content = $udpclient.Receive([ref]$endpoint)
 		$UdpClient.Close()
 	}
 	catch {
-		Write-Host "Connection timeout! Something is wrong here!" -ForegroundColor red
+		$UdpClient.Close()
+		Write-Error -Category OperationTimeout -CategoryReason "Timeout" -CategoryTargetName "Configured Timeout" -CategoryTargetType "$($timeout)" -Message "The waiting for a UDP Message timed out." -RecommendedAction "Check if the server sends the correct data."
 	}
 	
 	if ($content) {
 		$receivetimestamp = Get-Date -Format HH:mm:ss:ff
+		Write-Host ""
 		Write-Host "Paket received at $($receivetimestamp)"
 		Write-Host "Sender: $($endpoint.tostring())"
 		Write-Host "---- DATA ------"
@@ -58,7 +62,7 @@ Function listenToUDP {
 		Write-Host ""
 		
 		if ($parsedContent -eq 'I am awake!') {
-			Write-Host "Data contains the expected content. Moving on." -ForegroundColor green
+			Write-Host "Data contains the expected content. Now opening PuTTY." -ForegroundColor green
 		}
 		else {
 			Write-Error -Category InvalidData -CategoryReason "No expected content" -CategoryTargetName "Searching for content" -CategoryTargetType " ""I am awake!""" -Message "The data did not contain the expected content. ABORTING FUNCTION" -RecommendedAction "Check if the server sends the correct data."
@@ -70,9 +74,15 @@ Function lop-start-serverconnection {
 	[CmdletBinding()]
 	param()
 	
-	sendMagicPacket -Mac 'EC:8E:B5:7B:C9:5C'
-	
-	listenToUDP
+	$ping = Test-Connection -ComputerName 192.168.178.56 -Quiet -Count 1 -TimeoutSeconds 1
+	if ($ping) {
+		Write-Host 'Ping succeded. Starting connection immediately...'
+	}
+	else {
+		sendMagicPacket -Mac 'EC:8E:B5:7B:C9:5C'
+		
+		listenToUDP
+	}
 	
 	putty.exe -load 'ubuntu-server'
 }
@@ -120,8 +130,8 @@ Function lop-start-gaming {
 	)
 	
 	# start those programs: Logitech Gaming software & Armoury Crate
-	Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software.lnk" -wait
-	Start-Process -FilePath "$startMenuWindowsApps\ArmouryCrate.exe" -wait
+	Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software.lnk"
+	Start-Process -FilePath "$startMenuWindowsApps\ArmouryCrate.exe"
 	
 	if($multi) {
 		# open discord
@@ -144,10 +154,9 @@ Function lop-start-gaming {
 	$logitechProcess = Get-Process 'LCore'
 	$logitechProcess.CloseMainWindow()
 	
-	# Armoury Create has no MainWindow? Stopping process again makes no sense...
-	#Write-Host 'Closing GUI of ArmouryCrate'
-	#$armourycrateProcess = Get-Process 'ArmouryCrate'
-	#Stop-Process $armourycrateProcess
+	Write-Host 'Closing GUI of ArmouryCrate'
+	$armourycrateProcess = Get-Process 'ArmouryCrate'
+	$armourycrateProcess.CloseMainWindow()
 }
 
 Function lop-start-coding {
