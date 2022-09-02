@@ -180,7 +180,7 @@ Function lop-start-coding {
 	
 	if($vscode) {
 		# open Visual Studio Code
-		# Path not know, was never installed before
+		Start-Process -FilePath "$startMenuProgramData\Visual Studio Code.lnk"
 	}
 	
 	if($vs) {
