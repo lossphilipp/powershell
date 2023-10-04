@@ -24,6 +24,8 @@ Function sendMagicPacket {
 	[Byte[]] $MagicPacket = (,0xFF * 6) + ($MacByteArray  * 16)
 	
 	$UdpClient = New-Object System.Net.Sockets.UdpClient
+	# right now port 7 is closed on FritzBox (not even for internal purposes)
+	# How to open? See https://fritz.box/#secCheck
 	$UdpClient.Connect(([System.Net.IPAddress]::Broadcast),7)
 	$UdpClient.Send($MagicPacket,$MagicPacket.Length) > $null
 	$UdpClient.Close()
@@ -32,7 +34,7 @@ Function sendMagicPacket {
 Function listenToUDP {
 	param (
 		[string]$port = 1998,
-		[int]$timeout = 1000 * 120 # 2 minutes
+		[int]$timeout = 1000 * 60 # 1 minute
 	)
 	# 192.168.178.56 → 192.168.178.255
 	Write-Host "Start listening to UDP..."
@@ -94,10 +96,10 @@ Function lop-start-fhv {
 		[Parameter(Mandatory=$false)][switch]$zotero,
 		[Parameter(Mandatory=$false)][switch]$datagrip
 	)
-	$fhvFolder = "$Env:FHV\Semester 3"
+	$fhvFolder = "$Env:FHV\Semester 5"
 	
 	# start Teams
-	Start-Process -FilePath "$startMenuAppData\Microsoft Teams.lnk"
+	Start-Process -FilePath "$startMenuAppData\Microsoft Teams (work or school).lnk"
 	
 	# open Firefox to A5
 	Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList '-url https://a5.fhv.at/de/index.php'
@@ -130,8 +132,8 @@ Function lop-start-gaming {
 	)
 	
 	# start those programs: Logitech Gaming software & Armoury Crate
-	Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software.lnk"
-	Start-Process -FilePath "$startMenuWindowsApps\ArmouryCrate.exe"
+	Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software.lnk" -wait
+	Start-Process -FilePath "$startMenuWindowsApps\ArmouryCrate.exe" -wait
 	
 	if($multi) {
 		# open discord
@@ -164,7 +166,8 @@ Function lop-start-coding {
 	param(
 		[Parameter(Mandatory=$false)][switch]$android,
 		[Parameter(Mandatory=$false)][switch]$vscode,
-		[Parameter(Mandatory=$false)][switch]$vs
+		[Parameter(Mandatory=$false)][switch]$vs,
+		[Parameter(Mandatory=$false)][switch]$docker
 	)
 	
 	# start Git via Windows Terminal
@@ -187,12 +190,19 @@ Function lop-start-coding {
 		# open Visual Studio
 		Start-Process -FilePath "$startMenuProgramData\Visual Studio 2022.lnk"
 	}
+
+	if($docker) {
+		# open Docker Desktop
+		Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk"
+	}
 }
 
 Function lop-start-vm {
 	[CmdletBinding()]
 	param(
-		[Parameter(Mandatory=$false)][switch]$ubuntu
+		[Parameter(Mandatory=$false)][switch]$ubuntu,
+		[Parameter(Mandatory=$false)][switch]$kali,
+		[Parameter(Mandatory=$false)][switch]$whonix
 	)
 	# start Oracle VM VirtualBox
 	Start-Process -FilePath "$startMenuProgramData\Oracle VM VirtualBox\Oracle VM VirtualBox.lnk" -wait
@@ -201,6 +211,34 @@ Function lop-start-vm {
 		# open Ubuntu-VM
 		VBoxManage startvm "Ubuntu"
 	}
+
+	if($kali) {
+		# open Kali-Linux-VM
+		VBoxManage startvm "Kali-Linux"
+	}
+
+	if($whonix) {
+		# open Whonix incl. Gateway
+		VBoxManage startvm "Whonix-Gateway-Xfce"
+		VBoxManage startvm "Whonix-Workstation-Xfce"
+	}
+}
+
+Function lop-start-ClubCompanion {
+	[CmdletBinding()]
+	param()
+
+	# open Docker Desktop
+	Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk" -wait
+
+	# Open solution
+	Start-Process -FilePath "$Env:Coding\clubcompanion_backend\server\ClubCompanion.sln"
+
+	# open Firefox to Github Repository
+	Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList '-url https://github.com/manuel-stadelmann/clubcompanion_backend'
+
+	# run Postgres Container (docker daemon hopefully runs until now)
+	docker start postgres-db
 }
 
 Function lop-help {
@@ -208,43 +246,47 @@ Function lop-help {
 	param()
 	
 	$functions = @()
-	
 		$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-serverconnection   "
+		ModuleName = "lop-start-serverconnection   "
 		Parameters = "-"
-        Description = "Starts the server and opens a Putty session, as soon as it is booted."
+		Description = "Starts the server and opens a Putty session, as soon as it is booted."
+	}
 
-    }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-fhv"
-		Parameters = "vpn, zotero, datagrip   "
-        Description = "Starts Teams, opens ilias (in Firefox) & opens folder"
+		ModuleName = "lop-start-fhv"
+		Parameters = "vpn, zotero, datagrip"
+		Description = "Starts Teams, opens ilias (in Firefox) & opens folder"
+	}
 
-    }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-gaming"
+		ModuleName = "lop-start-gaming"
 		Parameters = "multi, riot, steam"
-        Description = "Starts Logitech Gaming software & Armoury Crate"
+		Description = "Starts Logitech Gaming software & Armoury Crate"
+	}
 
-    }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-coding"
+		ModuleName = "lop-start-coding"
 		Parameters = "android, vscode, vs"
-        Description = "Starts Git & opens folder"
+		Description = "Starts Git & opens folder"
+	}
 
-    }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-start-vm"
-		Parameters = "ubuntu"
-        Description = "Starts VirtualBox"
+		ModuleName = "lop-start-vm"
+		Parameters = "ubuntu, kali, whonix"
+		Description = "Starts VirtualBox"
+	}
 
-    }
 	$functions += [PSCustomObject]@{
-        ModuleName = "lop-help"
+		ModuleName = "lop-start-ClubCompanion"
 		Parameters = "-"
-        Description = "Displays all the available functions"
+		Description = "Starts Docker (incl. Postgres Container), opens backend solution & opens Github repo"
+	}
 
-    }
-	
+	$functions += [PSCustomObject]@{
+		ModuleName = "lop-help"
+		Parameters = "-"
+		Description = "Displays all the available functions"
+	}
+
 	$functions | Sort-Object -Property ModuleName | Format-Table -AutoSize
 }
