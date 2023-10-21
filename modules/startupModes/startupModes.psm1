@@ -99,7 +99,7 @@ Function lop-start-fhv {
 	$fhvFolder = "$Env:FHV\Semester 5"
 	
 	# start Teams
-	Start-Process -FilePath "$startMenuAppData\Microsoft Teams (work or school).lnk"
+	Start-Process -FilePath "$startMenuAppData\Microsoft Teams classic (work or school).lnk"
 	
 	# open Firefox to A5
 	Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList '-url https://a5.fhv.at/de/index.php'
@@ -115,11 +115,6 @@ Function lop-start-fhv {
 	if($zotero) {
 		# open Zotero
 		Start-Process -FilePath "$startMenuProgramData\Zotero.lnk"
-	}
-	
-	if($datagrip) {
-		# open DataGrip
-		Start-Process -FilePath "$startMenuProgramData\JetBrains\DataGrip 2022.1.4.lnk"
 	}
 }
 
@@ -141,9 +136,9 @@ Function lop-start-gaming {
 	}
 	
 	if($riot) {
-		# open riot client & Overwolf Plugin
+		# open riot client & U.GG Plugin
 		Start-Process -FilePath "$startMenuProgramData\Riot Games\Riot Client.lnk"
-		Start-Process -FilePath "$startMenuAppData\Overwolf\U.GG.lnk"
+		Start-Process -FilePath "$startMenuAppData\U.GG.lnk"
 	}
 	
 	if($steam) {
@@ -229,7 +224,7 @@ Function lop-start-ClubCompanion {
 	param()
 
 	# open Docker Desktop
-	Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk" -wait
+	Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk"
 
 	# Open solution
 	Start-Process -FilePath "$Env:Coding\clubcompanion_backend\server\ClubCompanion.sln"
@@ -239,6 +234,25 @@ Function lop-start-ClubCompanion {
 
 	# run Postgres Container (docker daemon hopefully runs until now)
 	docker start postgres-db
+}
+
+Function lop-start-Bachelorarbeit {
+	[CmdletBinding()]
+	param()
+
+	$fhvFolder = "$Env:FHV\Bachelorarbeit"
+	
+	# start Teams
+	Start-Process -FilePath "$startMenuAppData\Microsoft Teams classic (work or school).lnk"
+	
+	# start Word
+	Start-Process -FilePath "$($fhvFolder)\Dispositionspapier_Bachelorarbeit.docx"
+	
+	# open Zotero
+	Start-Process -FilePath "$startMenuProgramData\Zotero.lnk"
+
+	# open folder
+	openFolder($fhvFolder)
 }
 
 Function lop-help {
@@ -280,6 +294,13 @@ Function lop-help {
 		ModuleName = "lop-start-ClubCompanion"
 		Parameters = "-"
 		Description = "Starts Docker (incl. Postgres Container), opens backend solution & opens Github repo"
+	}
+	
+	$functions = @()
+		$functions += [PSCustomObject]@{
+		ModuleName = "lop-start-Bachelorarbeit"
+		Parameters = "-"
+		Description = "Opens the Word-document & Zotero and opens the folder"
 	}
 
 	$functions += [PSCustomObject]@{
