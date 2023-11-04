@@ -296,8 +296,7 @@ Function lop-help {
 		Description = "Starts Docker (incl. Postgres Container), opens backend solution & opens Github repo"
 	}
 	
-	$functions = @()
-		$functions += [PSCustomObject]@{
+	$functions += [PSCustomObject]@{
 		ModuleName = "lop-start-Bachelorarbeit"
 		Parameters = "-"
 		Description = "Opens the Word-document & Zotero and opens the folder"
