@@ -96,10 +96,10 @@ Function lop-start-fhv {
 		[Parameter(Mandatory=$false)][switch]$zotero,
 		[Parameter(Mandatory=$false)][switch]$datagrip
 	)
-	$fhvFolder = "$Env:FHV\Semester 5"
+	$fhvFolder = "$Env:FHV\Semester 6"
 	
 	# start Teams
-	Start-Process -FilePath "$startMenuAppData\Microsoft Teams classic (work or school).lnk"
+	Start-Process -FilePath "$startMenuWindowsApps\ms-teams.exe"
 	
 	# open Firefox to A5
 	Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList '-url https://a5.fhv.at/de/index.php'
