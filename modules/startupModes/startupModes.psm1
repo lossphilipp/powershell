@@ -96,7 +96,7 @@ Function lop-start-fhv {
 		[Parameter(Mandatory=$false)][switch]$zotero,
 		[Parameter(Mandatory=$false)][switch]$datagrip
 	)
-	$fhvFolder = "$Env:FHV\Semester 6"
+	$fhvFolder = "$Env:FHV\Master\Semester_1"
 	
 	# start Teams
 	Start-Process -FilePath "$startMenuWindowsApps\ms-teams.exe"
@@ -236,25 +236,6 @@ Function lop-start-ClubCompanion {
 	docker start postgres-db
 }
 
-Function lop-start-Bachelorarbeit {
-	[CmdletBinding()]
-	param()
-
-	$fhvFolder = "$Env:FHV\Bachelorarbeit"
-	
-	# start Teams
-	Start-Process -FilePath "$startMenuAppData\Microsoft Teams classic (work or school).lnk"
-	
-	# start Word
-	Start-Process -FilePath "$($fhvFolder)\Dispositionspapier_Bachelorarbeit.docx"
-	
-	# open Zotero
-	Start-Process -FilePath "$startMenuProgramData\Zotero.lnk"
-
-	# open folder
-	openFolder($fhvFolder)
-}
-
 Function lop-help {
 	[CmdletBinding()]
 	param()
@@ -294,12 +275,6 @@ Function lop-help {
 		ModuleName = "lop-start-ClubCompanion"
 		Parameters = "-"
 		Description = "Starts Docker (incl. Postgres Container), opens backend solution & opens Github repo"
-	}
-	
-	$functions += [PSCustomObject]@{
-		ModuleName = "lop-start-Bachelorarbeit"
-		Parameters = "-"
-		Description = "Opens the Word-document & Zotero and opens the folder"
 	}
 
 	$functions += [PSCustomObject]@{
