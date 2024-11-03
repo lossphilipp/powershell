@@ -94,15 +94,14 @@ Function lop-start-fhv {
 	param(
 		[Parameter(Mandatory=$false)][switch]$vpn,
 		[Parameter(Mandatory=$false)][switch]$zotero,
-		[Parameter(Mandatory=$false)][switch]$datagrip
+		[Parameter(Mandatory=$false)][switch]$datagrip,
+		[Parameter(Mandatory=$false)][switch]$teams
 	)
 	$fhvFolder = "$Env:FHV\Master\Semester_1"
-	
-	# start Teams
-	Start-Process -FilePath "$startMenuWindowsApps\ms-teams.exe"
-	
+	$urls = @("https://a5.fhv.at/de/index.php","https://ilias.fhv.at/")
+
 	# open Firefox to A5
-	Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList '-url https://a5.fhv.at/de/index.php'
+	Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList "-url $($urls)"
 	
 	# open folder
 	openFolder($fhvFolder)
@@ -115,6 +114,17 @@ Function lop-start-fhv {
 	if($zotero) {
 		# open Zotero
 		Start-Process -FilePath "$startMenuProgramData\Zotero.lnk"
+	}
+
+	if($datagrip) {
+		# open Datagrip
+		$datagripExecutable = Get-ChildItem -Path "$startMenuProgramData\JetBrains" -File
+		Start-Process $datagripExecutable
+	}
+
+	if($teams) {
+		# start Teams
+		Start-Process -FilePath "$startMenuWindowsApps\ms-teams.exe"
 	}
 }
 
@@ -164,9 +174,6 @@ Function lop-start-coding {
 		[Parameter(Mandatory=$false)][switch]$vs,
 		[Parameter(Mandatory=$false)][switch]$docker
 	)
-	
-	# start Git via Windows Terminal
-	wt -p "Git Bash" -d $Env:Coding
 	
 	# open folder
 	openFolder($Env:Coding)
@@ -249,8 +256,8 @@ Function lop-help {
 
 	$functions += [PSCustomObject]@{
 		ModuleName = "lop-start-fhv"
-		Parameters = "vpn, zotero, datagrip"
-		Description = "Starts Teams, opens ilias (in Firefox) & opens folder"
+		Parameters = "vpn, zotero, datagrip, teams"
+		Description = "Opens A5 & ilias (in Firefox) & opens folder"
 	}
 
 	$functions += [PSCustomObject]@{
