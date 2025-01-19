@@ -194,44 +194,36 @@ Function lop-start-coding {
 	}
 
 	if($docker) {
-		# open Docker Desktop
-		Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk"
+		lop-start-docker
 	}
 }
 
 Function lop-start-vm {
 	[CmdletBinding()]
 	param(
-		[Parameter(Mandatory=$false)][switch]$ubuntu,
-		[Parameter(Mandatory=$false)][switch]$kali,
-		[Parameter(Mandatory=$false)][switch]$whonix
+		[Parameter(Mandatory=$false)][switch]$kali
 	)
 	# start Oracle VM VirtualBox
 	Start-Process -FilePath "$startMenuProgramData\Oracle VM VirtualBox\Oracle VM VirtualBox.lnk" -wait
-	
-	if($ubuntu) {
-		# open Ubuntu-VM
-		VBoxManage startvm "Ubuntu"
-	}
 
 	if($kali) {
 		# open Kali-Linux-VM
 		VBoxManage startvm "Kali-Linux"
 	}
+}
 
-	if($whonix) {
-		# open Whonix incl. Gateway
-		VBoxManage startvm "Whonix-Gateway-Xfce"
-		VBoxManage startvm "Whonix-Workstation-Xfce"
-	}
+Function lop-start-docker {
+	[CmdletBinding()]
+	param()
+	# open Docker Desktop
+	Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk"
 }
 
 Function lop-start-ClubCompanion {
 	[CmdletBinding()]
 	param()
 
-	# open Docker Desktop
-	Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk"
+	lop-start-docker
 
 	# Open solution
 	Start-Process -FilePath "$Env:Coding\clubcompanion_backend\server\ClubCompanion.sln"
@@ -274,8 +266,14 @@ Function lop-help {
 
 	$functions += [PSCustomObject]@{
 		ModuleName = "lop-start-vm"
-		Parameters = "ubuntu, kali, whonix"
+		Parameters = "kali"
 		Description = "Starts VirtualBox"
+	}
+
+	$functions += [PSCustomObject]@{
+		ModuleName = "lop-start-docker"
+		Parameters = "-"
+		Description = "Starts Docker Desktop"
 	}
 
 	$functions += [PSCustomObject]@{
