@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'LOP_startup.psm1'
+RootModule = 'LOP_help.psm1'
 
 # Version number of this module.
 ModuleVersion = '1.0'

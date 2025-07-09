@@ -1,4 +1,4 @@
-. "$PSScriptRoot\LOP_help.ps1"
+. (($PSScriptRoot | Split-Path) + "\LOP_help\LOP_help.ps1")
 
 Function LOP-Help {
     <#
@@ -23,7 +23,7 @@ Function LOP-Help {
     }
 
     process {
-        Import-Module "$PSScriptRoot\startup\LOP_startup.psm1" -Force
+        Import-Module "$PSScriptRoot\LOP_help\LOP_startup.psm1" -Force
 
         Get-Help "LOP*"
     }

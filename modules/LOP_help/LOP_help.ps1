@@ -16,6 +16,14 @@ Function Open-Folder {
     Get-ChildItem
 }
 
+Function Open-Firefox {
+    param (
+        [string[]]$URLs
+    )
+    
+    Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList "-url $($URLs)"
+}
+
 Function Send-MagicPacket {
     param (
         [string]$Mac

@@ -1,4 +1,4 @@
-. (($PSScriptRoot | Split-Path) + "..\helper\LOP_help.ps1")
+. (($PSScriptRoot | Split-Path) + "\LOP_help\LOP_help.ps1")
 
 Function LOP-FHV {
     <#
@@ -58,7 +58,7 @@ Function LOP-FHV {
     }
 
     process {
-        Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList "-url $($urls)"
+        Open-Firefox -URLs $urls
         
         Open-Folder($fhvFolder)
         
@@ -221,7 +221,7 @@ Function LOP-Coding {
     process {
         Open-Folder($Env:Coding)
 
-        Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList '-url https://github.com/'
+        Open-Firefox -URLs "https://github.com/"
 
         if ($VSCode) {
             Start-Process -FilePath "$startMenuProgramData\Visual Studio Code.lnk"
