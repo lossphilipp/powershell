@@ -26,6 +26,7 @@ Function LOP-FHV {
         https://github.com/lossphilipp/powershell
     #>
 
+    [OutputType('System.Void')]
     Param (
         # Open Cisco VPN
         # Alias: v
@@ -70,11 +71,6 @@ Function LOP-FHV {
             Start-Process -FilePath "$startMenuProgramData\Zotero.lnk"
         }
 
-        if ($DataGrip) {
-            $datagripExecutable = Get-ChildItem -Path "$startMenuProgramData\JetBrains" -File
-            Start-Process $datagripExecutable
-        }
-
         if ($Teams) {
             Start-Process -FilePath "$startMenuWindowsApps\ms-teams.exe"
         }
@@ -110,6 +106,7 @@ Function LOP-Gaming {
         https://github.com/lossphilipp/powershell
     #>
 
+    [OutputType('System.Void')]
     Param (
         # Open Discord
         # Alias: d, m
@@ -188,6 +185,7 @@ Function LOP-Coding {
         https://github.com/lossphilipp/powershell
     #>
 
+    [OutputType('System.Void')]
     Param (
         # Open VS Code
         # Alias: c
@@ -224,7 +222,7 @@ Function LOP-Coding {
         Open-Firefox -URLs "https://github.com/"
 
         if ($VSCode) {
-            Start-Process -FilePath "$startMenuProgramData\Visual Studio Code.lnk"
+            Start-Process -FilePath "$startMenuProgramData\Visual Studio Code\Visual Studio Code.lnk"
         }
 
         if ($VisualStudio) {
@@ -261,14 +259,19 @@ Function LOP-Homelab {
         https://github.com/lossphilipp/powershell
     #>
 
+    [OutputType('System.Void')]
     Param ()
 
     begin {
-
+        $homelabFolder = "$Env:Coding\homelab"
+        $urls = @("https://proxmox-server:8006/","http://docker-host.proxmox/","http://homeassistant.proxmox:8123/")
     }
 
     process {
+        Open-Firefox -URLs $urls
+        Open-Folder($homelabFolder)
 
+        Start-Process -FilePath "$startMenuProgramData\Visual Studio Code\Visual Studio Code.lnk" -ArgumentList "-n $homelabFolder"
     }
 
     end {
@@ -292,12 +295,13 @@ Function LOP-Docker {
         https://github.com/lossphilipp/powershell
     #>
 
+    [OutputType('System.Void')]
     Param (
         # The name of the image to start
         # Aliases: Name, i
         [Parameter(
             Mandatory = $false,
-            ValueFromPipeline=$true
+            ValueFromPipeline = $true
         )]
         [Alias("Name")]
         [Alias("i")]
@@ -311,7 +315,6 @@ Function LOP-Docker {
     process {
         Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk"
 
-        # ToDo: Test this
         if ($Image) {
             $foundImage = Get-DockerImage -Name $Image
             if ($foundImage) {

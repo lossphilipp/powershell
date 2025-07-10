@@ -7,63 +7,125 @@ $startMenuWindowsApps = "$Env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\"
 ########### Functions ##########
 
 Function Open-Folder {
-    param (
+    [OutputType('System.Void')]
+    Param (
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
         [string]$Path
     )
-    
-    Invoke-Item $Path
-    Set-Location $Path
-    Get-ChildItem
+
+    begin {
+
+    }
+
+    process {
+        Invoke-Item $Path
+        Set-Location $Path
+        Get-ChildItem
+    }
+
+    end {
+
+    }
 }
 
 Function Open-Firefox {
-    param (
+    [OutputType('System.Void')]
+    Param (
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
         [string[]]$URLs
     )
-    
-    Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList "-url $($URLs)"
+
+    begin {
+
+    }
+
+    process {
+        Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList "-url $($URLs)"
+    }
+
+    end {
+
+    }
 }
 
 Function Send-MagicPacket {
-    param (
+    [OutputType('System.Void')]
+    Param (
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
         [string]$Mac
     )
-    
-    Write-Host "Sending Magic Packet to $($Mac)"
-    
-    $Mac = $Mac.ToUpper()
-    $MacByteArray = $Mac -split "[:-]" | ForEach-Object { [Byte] "0x$_"}
-    [Byte[]] $MagicPacket = (,0xFF * 6) + ($MacByteArray  * 16)
-    
-    $UdpClient = New-Object System.Net.Sockets.UdpClient
-    # right now port 7 is closed on FritzBox (not even for internal purposes)
-    # How to open? See https://fritz.box/#secCheck
-    $UdpClient.Connect(([System.Net.IPAddress]::Broadcast),7)
-    $UdpClient.Send($MagicPacket,$MagicPacket.Length) > $null
-    $UdpClient.Close()
+
+    begin {
+
+    }
+
+    process {
+        Write-Host "Sending Magic Packet to $($Mac)"
+        
+        $Mac = $Mac.ToUpper()
+        $MacByteArray = $Mac -split "[:-]" | ForEach-Object { [Byte] "0x$_"}
+        [Byte[]] $MagicPacket = (,0xFF * 6) + ($MacByteArray  * 16)
+        
+        $UdpClient = New-Object System.Net.Sockets.UdpClient
+        # right now port 7 is closed on FritzBox (not even for internal purposes)
+        # How to open? See https://fritz.box/#secCheck
+        $UdpClient.Connect(([System.Net.IPAddress]::Broadcast),7)
+        $UdpClient.Send($MagicPacket,$MagicPacket.Length) > $null
+        $UdpClient.Close()
+    }
+
+    end {
+
+    }
 }
 
-Function Listen-UDP {
-    param (
+Function Get-UdpPacket {
+    [OutputType('System.Void')]
+    Param (
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [PSDefaultValue(Help='1998')]
         [string]$port = 1998,
+
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [PSDefaultValue(Help='1 minute')]
         [int]$timeout = 1000 * 60 # 1 minute
     )
-    Write-Host "Start listening to UDP..."
 
-    $endpoint = New-Object System.Net.IPEndPoint ([IPAddress]::Any, $port)
-    $udpclient = New-Object System.Net.Sockets.UdpClient $port
-    $udpclient.Client.ReceiveTimeout = $timeout
-    
-    try {
-        $content = $udpclient.Receive([ref]$endpoint)
-        $UdpClient.Close()
+    begin {
+
     }
-    catch {
-        $UdpClient.Close()
-        Write-Error -Category OperationTimeout -CategoryReason "Timeout" -CategoryTargetName "Configured Timeout" -CategoryTargetType "$($timeout)" -Message "The waiting for a UDP Message timed out." -RecommendedAction "Check if the server sends the correct data."
-    }
-    
-    if ($content) {
+
+    process {
+        Write-Host "Start listening to UDP..."
+
+        $endpoint = New-Object System.Net.IPEndPoint ([IPAddress]::Any, $port)
+        $udpclient = New-Object System.Net.Sockets.UdpClient $port
+        $udpclient.Client.ReceiveTimeout = $timeout
+        
+        try {
+            $content = $udpclient.Receive([ref]$endpoint)
+        } catch {
+            Write-Error -Category OperationTimeout -CategoryReason "Timeout" -CategoryTargetName "Configured Timeout" -CategoryTargetType "$($timeout)" -Message "The waiting for a UDP Message timed out." -RecommendedAction "Check if the server sends the correct data."
+            return
+        } finally {
+            $UdpClient.Close()
+        }
+        
         $receivetimestamp = Get-Date -Format HH:mm:ss:ff
         Write-Host ""
         Write-Host "Paket received at $($receivetimestamp)"
@@ -81,19 +143,96 @@ Function Listen-UDP {
             Write-Error -Category InvalidData -CategoryReason "No expected content" -CategoryTargetName "Searching for content" -CategoryTargetType " ""I am awake!""" -Message "The data did not contain the expected content. ABORTING FUNCTION" -RecommendedAction "Check if the server sends the correct data."
         }
     }
+
+    end {
+
+    }
 }
 
 Function Close-GUI {
-    param (
-        [Parameter(Mandatory=$true)][string]$serviceName,
-        [Parameter(Mandatory=$false)][string]$displayName
+    [OutputType('System.Void')]
+    Param (
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [string]$serviceName,
+
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true
+        )]
+        [string]$displayName
     )
-    
-    if (-Not $displayName) {
-        $displayName = $serviceName
+
+    begin {
+
     }
-    
-    Write-Host "Closing GUI of $($displayName)"
-    $process = Get-Process $serviceName
-    $process.CloseMainWindow()
+
+    process {
+        if (-Not $displayName) {
+            $displayName = $serviceName
+        }
+        
+        Write-Host "Closing GUI of $($displayName)"
+        $process = Get-Process $serviceName
+        $process.CloseMainWindow()
+    }
+
+    end {
+
+    }
+}
+
+Function Get-DockerImage {
+    [OutputType('string')]
+    Param (
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
+        [string]$Name
+    )
+
+    begin {
+
+    }
+
+    process {
+        $images = docker images --format '{{.Repository}}:{{.Tag}}' | Where-Object { $_ -like "$Name*" }
+        if (-not $images) {
+            throw "No Docker images found matching '$Name'."
+        } elseif ($images.Count -gt 1) {
+            throw "Multiple Docker images found matching '$Name': $($images -join ', '). Please specify a more specific name."
+        }
+
+        return $images
+    }
+
+    end {
+
+    }
+}
+
+Function Start-DockerContainer {
+    [OutputType('System.Void')]
+    Param (
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true
+        )]
+        [string]$Image
+    )
+
+    begin {
+
+    }
+
+    process {
+        docker run -d $Image
+    }
+
+    end {
+
+    }
 }

@@ -16,6 +16,7 @@ Function LOP-Help {
         https://github.com/lossphilipp/powershell
     #>
 
+    [OutputType('System.Void')]
     Param ()
 
     begin {
