@@ -1,4 +1,4 @@
-. (($PSScriptRoot | Split-Path) + "\LOP_help\LOP_help.ps1")
+. (Join-Path -Path ($PSScriptRoot | Split-Path) -ChildPath "\LOP_help\LOP_help.ps1")
 
 Function LOP-FHV {
     <#

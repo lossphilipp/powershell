@@ -1,4 +1,4 @@
-. (($PSScriptRoot | Split-Path) + "\LOP_help\LOP_help.ps1")
+. (Join-Path -Path $PSScriptRoot -ChildPath "LOP_help.ps1")
 
 Function LOP-Help {
     <#
@@ -24,7 +24,8 @@ Function LOP-Help {
     }
 
     process {
-        Import-Module "$PSScriptRoot\LOP_help\LOP_startup.psm1" -Force
+        Join-Path -Path ($PSScriptRoot | Split-Path) -ChildPath "\LOP_startup\LOP_startup.psd1" |
+        Import-Module -Force
 
         Get-Help "LOP*"
     }
