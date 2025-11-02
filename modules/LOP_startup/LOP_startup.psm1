@@ -26,6 +26,7 @@ Function LOP-FHV {
         https://github.com/lossphilipp/powershell
     #>
 
+    [Cmdletbinding()]
     [OutputType('System.Void')]
     Param (
         # Open Cisco VPN
@@ -106,6 +107,7 @@ Function LOP-Gaming {
         https://github.com/lossphilipp/powershell
     #>
 
+    [Cmdletbinding()]
     [OutputType('System.Void')]
     Param (
         # Open Discord
@@ -114,17 +116,17 @@ Function LOP-Gaming {
         [Alias("d", "m")]
         [switch]$Multiplayer,
         
-        # Open Riot Client
-        # Alias: r
-        [Parameter()]
-        [Alias("r")]
-        [switch]$Riot,
-        
         # Open Steam
         # Alias: s
         [Parameter()]
         [Alias("s")]
-        [switch]$Steam
+        [switch]$Steam,
+
+        # Open GOG Galaxy
+        # Alias: g
+        [Parameter()]
+        [Alias("g")]
+        [switch]$GOG
     )
 
     begin {
@@ -132,27 +134,25 @@ Function LOP-Gaming {
     }
 
     process {
-        Start-Process -FilePath "$startMenuProgramData\Logitech Gaming Software.lnk" -wait
-        Start-Process -FilePath "$startMenuWindowsApps\ArmouryCrate.exe" -wait
-        Start-Process -FilePath "$startMenuProgramData\AMD Software꞉ Adrenalin Edition\AMD Software꞉ Adrenalin Edition.lnk" -wait
+        Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "Logitech\Logitech Gaming Software 9.04.lnk") -wait
+        Start-Process -FilePath (Join-Path -Path $startMenuWindowsApps -ChildPath "ArmouryCrate.exe") -wait
+        Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "AMD Software꞉ Adrenalin Edition\AMD Software꞉ Adrenalin Edition.lnk") -wait
 
         if ($Multiplayer) {
-            Start-Process -FilePath "$startMenuAppData\Discord.lnk"
-        }
-
-        if ($Riot) {
-            Start-Process -FilePath "$startMenuProgramData\Riot Games\Riot Client.lnk"
-            Start-Process -FilePath "$startMenuAppData\U.GG.lnk"
+            Start-Process -FilePath (Join-Path -Path $startMenuAppData -ChildPath "Discord.lnk")
         }
 
         if ($Steam) {
-            Start-Process -FilePath "$startMenuProgramData\Steam\Steam.lnk"
+            Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "Steam\Steam.lnk")
         }
 
-        # then close different GUIs
+        if ($GOG) {
+            Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "GOG.com\GOG Galaxy.lnk")
+        }
+
         Close-GUI 'LCore' 'Logitech Gaming Software'
         Close-GUI 'ArmouryCrate'
-        Close-GUI 'RadeonSoftware'
+        Close-GUI 'RadeonSoftware' 'AMD Adrenaline Software'
     }
 
     end {
@@ -185,8 +185,15 @@ Function LOP-Coding {
         https://github.com/lossphilipp/powershell
     #>
 
+    [Cmdletbinding()]
     [OutputType('System.Void')]
     Param (
+        # Start Docker Desktop
+        # Alias: d
+        [Parameter()]
+        [Alias("d")]
+        [switch]$Docker,
+
         # Open VS Code
         # Alias: c
         [Parameter()]
@@ -199,17 +206,11 @@ Function LOP-Coding {
         [Alias("v", "vs")]
         [switch]$VisualStudio,
 
-        # Start Docker Desktop
-        # Alias: d
-        [Parameter()]
-        [Alias("d")]
-        [switch]$Docker
-
         # Open Android Studio
         # Alias: a
-        # [Parameter()]
-        # [Alias("a")]
-        # [switch]$Android,
+        [Parameter(DontShow)]
+        [Alias("a")]
+        [switch]$Android
     )
 
     begin {
@@ -221,20 +222,20 @@ Function LOP-Coding {
 
         Open-Firefox -URLs "https://github.com/"
 
-        if ($VSCode) {
-            Start-Process -FilePath "$startMenuProgramData\Visual Studio Code\Visual Studio Code.lnk"
-        }
-
-        if ($VisualStudio) {
-            Start-Process -FilePath "$startMenuProgramData\Visual Studio 2022.lnk"
-        }
-
         if ($Docker) {
             LOP-Docker
         }
 
+        if ($VSCode) {
+            Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "Visual Studio Code\Visual Studio Code.lnk")
+        }
+
+        if ($VisualStudio) {
+            Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "Visual Studio 2022.lnk")
+        }
+
         if ($Android) {
-            Start-Process -FilePath "$startMenuProgramData\Android Studio.lnk"
+            Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "Android Studio.lnk")
         }
     }
 
@@ -259,11 +260,12 @@ Function LOP-Homelab {
         https://github.com/lossphilipp/powershell
     #>
 
+    [Cmdletbinding()]
     [OutputType('System.Void')]
     Param ()
 
     begin {
-        $homelabFolder = "$Env:Coding\homelab"
+        $homelabFolder = (Join-Path -Path $Env:Coding -ChildPath "homelab")
         $urls = @("https://proxmox-server:8006/","http://docker-host.proxmox/","http://homeassistant.proxmox:8123/")
     }
 
@@ -271,7 +273,7 @@ Function LOP-Homelab {
         Open-Firefox -URLs $urls
         Open-Folder($homelabFolder)
 
-        Start-Process -FilePath "$startMenuProgramData\Visual Studio Code\Visual Studio Code.lnk" -ArgumentList "-n $homelabFolder"
+        Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "Visual Studio Code\Visual Studio Code.lnk") -ArgumentList "-n $homelabFolder"
     }
 
     end {
@@ -295,6 +297,7 @@ Function LOP-Docker {
         https://github.com/lossphilipp/powershell
     #>
 
+    [Cmdletbinding()]
     [OutputType('System.Void')]
     Param (
         # The name of the image to start
@@ -313,7 +316,7 @@ Function LOP-Docker {
     }
 
     process {
-        Start-Process -FilePath "$Env:ProgramData\Microsoft\Windows\Start Menu\Docker Desktop.lnk"
+        Start-Process -FilePath (Join-Path -Path $Env:ProgramData -ChildPath "Microsoft\Windows\Start Menu\Docker Desktop.lnk")
 
         if ($Image) {
             $foundImage = Get-DockerImage -Name $Image

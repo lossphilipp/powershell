@@ -1,8 +1,8 @@
 ########### Variables ##########
 
-$startMenuProgramData = "$Env:ProgramData\Microsoft\Windows\Start Menu\Programs\"
-$startMenuAppData = "$Env:AppData\Microsoft\Windows\Start Menu\Programs\"
-$startMenuWindowsApps = "$Env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\"
+$startMenuProgramData = (Join-Path -Path $Env:ProgramData -ChildPath "Microsoft\Windows\Start Menu\Programs")
+$startMenuAppData = (Join-Path -Path $Env:AppData -ChildPath "Microsoft\Windows\Start Menu\Programs")
+$startMenuWindowsApps = (Join-Path -Path $Env:USERPROFILE -ChildPath "AppData\Local\Microsoft\WindowsApps")
 
 ########### Functions ##########
 
@@ -46,7 +46,7 @@ Function Open-Firefox {
     }
 
     process {
-        Start-Process -FilePath "$startMenuProgramData\Firefox Developer Edition.lnk" -ArgumentList "-url $($URLs)"
+        Start-Process -FilePath (Join-Path -Path $startMenuProgramData -ChildPath "Firefox Developer Edition.lnk") -ArgumentList "-url $($URLs)"
     }
 
     end {
@@ -173,10 +173,15 @@ Function Close-GUI {
         if (-Not $displayName) {
             $displayName = $serviceName
         }
-        
+
         Write-Host "Closing GUI of $($displayName)"
-        $process = Get-Process $serviceName
-        $process.CloseMainWindow()
+
+        try {
+            $process = Get-Process $serviceName
+            $process.CloseMainWindow()
+        } catch {
+            Write-Host "No running process found for $($displayName). Skipping..." -ForegroundColor Yellow
+        }
     }
 
     end {

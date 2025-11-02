@@ -16,6 +16,7 @@ Function LOP-Help {
         https://github.com/lossphilipp/powershell
     #>
 
+    [Cmdletbinding()]
     [OutputType('System.Void')]
     Param ()
 

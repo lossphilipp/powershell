@@ -5,7 +5,7 @@ if (-Not $elevated) {
     throw "This script requires that PowerShell is running with admin rights!"
 }
 
-Function AddRootToPSModulePath {
+Function Add-RootToPSModulePath {
     $PSModulesString = [Environment]::GetEnvironmentVariable("PSModulePath", "Machine")
     $currentPSModules = $PSModulesString -split [System.IO.Path]::PathSeparator
 
@@ -22,12 +22,12 @@ Function AddRootToPSModulePath {
     $env:PSModulePath = [System.Environment]::GetEnvironmentVariable("PSModulePath", "Machine")
 }
 
-function TestModuleImports {
+function Test-ModuleImports {
     Import-Module -Name LOP_startup -Force -DisableNameChecking
     Import-Module -Name LOP_help -Force -DisableNameChecking
 
     Get-Help "LOP*" | Out-Default
 }
 
-AddRootToPSModulePath
-TestModuleImports
+Add-RootToPSModulePath
+Test-ModuleImports
